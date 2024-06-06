@@ -1,33 +1,24 @@
 #!/usr/bin/python3
-"""
-Write a function that queries the Reddit API
-and prints the titles of the first 10 hot posts listed for a given subreddit.
-
-Requirements:
-
-If not a valid subreddit, print None.
-NOTE: Invalid subreddits may return a redirect to search results.
-Ensure that you are not following redirects.
-"""
+'''
+    this module contains the function top_ten
+'''
+import requests
+from sys import argv
 
 
 def top_ten(subreddit):
-    """
-    If not a valid subreddit, print None.
-    """
-    import json
-    import requests
-    url = "https://www.reddit.com/r/{}/hot/.json".format(subreddit)
-    headers = {
-        "User-Agent": "User Agent"
-    }
-    params = {
-        "limit": 10
-    }
-    response = requests.get(url, headers=headers, params=params,
-                            allow_redirects=False)
-    if response.status_code == 404:
-        print("None")
-        return
-    results = response.json().get("data")
-    [print(top.get("data").get("title")) for top in results.get("children")]
+    '''
+        returns the top ten posts for a given subreddit
+    '''
+    user = {'User-Agent': 'Lizzie'}
+    url = requests.get('https://www.reddit.com/r/{}/hot/.json?limit=10'
+                       .format(subreddit), headers=user).json()
+    try:
+        for post in url.get('data').get('children'):
+            print(post.get('data').get('title'))
+    except Exception:
+        print(None)
+
+
+if __name__ == "__main__":
+    top_ten(argv[1])
